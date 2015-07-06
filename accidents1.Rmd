@@ -1,0 +1,65 @@
+---
+title: "Taffic/Road Accidents"
+author: "Tamer Koksal"
+date: April 13, 2015
+output: 
+    html_document:
+        keep_md: True
+---
+
+```{r setoptions, echo=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r}
+setwd("/Users/tamer/Documents/job/dataIncubator")
+library(xlsx)
+accidents <- read.xlsx("accidents.xlsx", 1)
+```
+
+***
+
+## State Road Traffic Accidents in Kirikkale Region (Turkey)
+
+
+***
+
+```{r grafikler}
+############    PLOTS ################
+
+require(ggplot2)
+library(grid)
+library(gridExtra)
+
+# Accidents resulting in casualties
+
+p1 <- ggplot(accidents, aes(x = year, y = fatal))
+p1 <- p1 + geom_line(color = "red") + geom_point() + xlab("Year") + ylab("Fatal Accidents") + ylim(0, max(accidents$fatal)) +
+    geom_text(aes(y=fatal, label=format(fatal), hjust = 0.45, vjust = 1.7), size = 4) + scale_x_continuous(breaks=2007:2014)
+
+# Accidents resulting in injuries
+
+p2 <- ggplot(accidents, aes(x = year, y = injury))
+p2 <- p2 + geom_line(color = "blue") + geom_point() + xlab("Year") + ylab("Injury Accidents") + ylim(min(accidents$injury)-20, max(accidents$injury)) +
+    geom_text(aes(y=injury, label=format(injury), hjust = 0.45, vjust = 1.7), size = 4) + scale_x_continuous(breaks=2008:2014)
+
+# Accidents resulting in property damage
+
+p3 <- ggplot(accidents, aes(x = year, y = property_damage))
+p3 <- p3 + geom_line(color = "green") + geom_point() + xlab("Year") + ylab("Property Damage Accidents") + ylim(min(accidents$property_damage)-20, max(accidents$property_damage)) +
+    geom_text(aes(y=property_damage, label=format(property_damage), hjust = 0.45, vjust = 1.7), size = 4) + scale_x_continuous(breaks=2007:2014)
+
+# Total Accidents
+accidents$total <- accidents$fatal + accidents$injury + accidents$property_damage
+p4 <- ggplot(accidents, aes(x = year, y = total))
+p4 <- p4 + geom_line(color = "orange") + geom_point() + xlab("Year") + ylab("Total Accidents") + ylim(min(accidents$total)-20, max(accidents$total)) +
+    geom_text(aes(y=total, label=format(total), hjust = 0.45, vjust = 1.7), size = 4) + scale_x_continuous(breaks=2007:2014)
+
+# Accidents by Type and Year
+
+grid.arrange(p1, p2, p3, p4, ncol = 2, main = "Frequency of Accidents by Type and Year")
+```
+
+***
